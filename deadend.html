@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Another dead end</title>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    background: #000;                 /* black background */
+    font-family: Arial, Helvetica, sans-serif;
+    display: grid;
+    place-items: center;              /* perfectly centered */
+    color: #ff2b2b;                   /* bright red */
+  }
+
+  /* Glitchy text styles */
+  .deadend {
+    position: relative;
+    font-size: clamp(28px, 7vw, 96px);
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    animation: skew-wobble 1.2s infinite linear alternate;
+    cursor: pointer;
+  }
+  .deadend::before,
+  .deadend::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .deadend::before {
+    transform: translateX(2px);
+    text-shadow: -2px 0 #00ffff;
+    clip-path: inset(0 0 85% 0);
+    animation: glitchA 2.1s infinite steps(2, end) alternate;
+  }
+  .deadend::after {
+    transform: translateX(-2px);
+    text-shadow: 2px 0 #ff00ff;
+    clip-path: inset(10% 0 20% 0);
+    animation: glitchB 1.7s infinite steps(2, end) alternate;
+  }
+
+  /* Gentle skew wobble */
+  @keyframes skew-wobble {
+    0% { transform: skewX(0deg); }
+    20% { transform: skewX(2deg); }
+    40% { transform: skewX(-2deg); }
+    60% { transform: skewX(1deg); }
+    80% { transform: skewX(-1deg); }
+    100% { transform: skewX(0deg); }
+  }
+  /* Random-ish slice glitches */
+  @keyframes glitchA {
+    0%   { clip-path: inset(0 0 85% 0); }
+    20%  { clip-path: inset(15% 0 40% 0); }
+    40%  { clip-path: inset(40% 0 15% 0); }
+    60%  { clip-path: inset(10% 0 70% 0); }
+    80%  { clip-path: inset(25% 0 35% 0); }
+    100% { clip-path: inset(0 0 85% 0); }
+  }
+  @keyframes glitchB {
+    0%   { clip-path: inset(5% 0 80% 0); }
+    20%  { clip-path: inset(35% 0 10% 0); }
+    40%  { clip-path: inset(50% 0 30% 0); }
+    60%  { clip-path: inset(15% 0 60% 0); }
+    80%  { clip-path: inset(0 0 75% 0); }
+    100% { clip-path: inset(5% 0 80% 0); }
+  }
+
+  /* Hint at the bottom */
+  .hint {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #888;
+    font-size: 14px;
+    letter-spacing: .3px;
+    opacity: .75;
+    user-select: none;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+  <div id="deadendText" class="deadend" data-text="Another dead end">
+    Another dead end
+  </div>
+
+  <div id="hint" class="hint">Click/Tap or press Enter to enter fullscreen</div>
+
+<script>
+  // Fullscreen helper
+  async function requestFullscreen(el) {
+    const docEl = el || document.documentElement;
+    const request =
+      docEl.requestFullscreen ||
+      docEl.webkitRequestFullscreen ||
+      docEl.mozRequestFullScreen ||
+      docEl.msRequestFullscreen;
+    if (request) {
+      try { await request.call(docEl); } catch (e) { /* ignore */ }
+    }
+  }
+
+  const text = document.getElementById('deadendText');
+  const hint = document.getElementById('hint');
+
+  function goFullscreen() {
+    requestFullscreen(document.documentElement);
+    hint.classList.add('hidden');
+  }
+
+  // Click/tap
+  text.addEventListener('click', goFullscreen);
+
+  // Keyboard
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.code === 'Space') {
+      goFullscreen();
+    }
+  });
+</script>
+</body>
+</html>
